@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
     fill_range('a', 'z', 2, 2, automata[1]);
     fill_range('0', '9', 2, 2, automata[1]);
     automata[1].set_initial_state(0);
-    automata[1].add_acceptation_state(2);
+    automata[1].add_acceptation_states({1, 2});
 
     // Create automata for RE ([1-9][0-9]*)|0
     automata[2].add_transition(0, 3, '0');
@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
     automata[2].add_acceptation_states({1, 2, 3});
 
     for (size_t i = 0; i < automata.size(); ++i)
-    {
+    {   
         std::ofstream out{dfa_names[i] + ".dot"};
         automata[i].to_dot(out);
         out.close();

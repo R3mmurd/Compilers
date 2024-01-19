@@ -1,6 +1,6 @@
 #pragma once
 
-enum __token_t
+typedef enum
 {
     TOKEN_EOF,
     TOKEN_MULTIPLY,
@@ -11,21 +11,17 @@ enum __token_t
     TOKEN_IDENTIFIER,
     TOKEN_INTEGER,
     TOKEN_UNKNOWN
-};
+} token_t;
 
 #define MAX_BUFFER_LENGTH 1024
 
-typedef enum __token_t token_t;
-
 typedef char buffer_t[MAX_BUFFER_LENGTH];
 
-struct __token
+typedef struct
 {
     token_t  token;
     buffer_t value;
-};
-
-typedef struct __token Token;
+} Token;
 
 const char* to_str(token_t t)
 {

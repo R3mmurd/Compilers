@@ -43,7 +43,7 @@ BOOL is_next_equal_char(FILE* f)
     return FALSE;
 }
 
-Token build_integer_token(FILE* f, int c)
+Token build_integer_token(FILE* f, char c)
 {
     int n = 0;
     Token t;
@@ -58,13 +58,13 @@ Token build_integer_token(FILE* f, int c)
         c = fgetc(f);        
     }
 
-    t.value[n] = 0;
+    t.value[n] = '\0';
     ungetc(c, f);
 
     return t;
 }
 
-Token build_identifier_token(FILE* f, int c)
+Token build_identifier_token(FILE* f, char c)
 {
     int n = 0;
     Token t;
@@ -82,13 +82,13 @@ Token build_identifier_token(FILE* f, int c)
         }
 
         t.token = TOKEN_UNKNOWN;
-        t.value[n--] = 0;
+        t.value[n--] = '\0';
 
         if (isalnum(c))
         {
             ungetc(c, f);
             ungetc('_', f);
-            t.value[n--] = 0;
+            t.value[n--] = '\0';
         }
         else
         {
@@ -104,7 +104,7 @@ Token build_identifier_token(FILE* f, int c)
         c = fgetc(f);
     }
 
-    t.value[n] = 0;
+    t.value[n] = '\0';
     ungetc(c, f);
 
     return t;
@@ -118,7 +118,7 @@ Token scan_token(FILE* f)
 
     if (feof(f))
     {
-        result.value[0] = 0;
+        result.value[0] = '\0';
         result.token = TOKEN_EOF;
         return result;
     }
@@ -129,7 +129,7 @@ Token scan_token(FILE* f)
     {
         result.token = TOKEN_MULTIPLY;
         result.value[0] = '*';
-        result.value[1] = 0;
+        result.value[1] = '\0';
         return result;
     }
     
@@ -140,13 +140,12 @@ Token scan_token(FILE* f)
         {
             result.token = TOKEN_EQUAL;
             result.value[1] = '=';
-            result.value[2] = 0;
+            result.value[2] = '\0';
             return result;
         }
         result.token = TOKEN_ASSIGN;
-        result.value[1] = 0;
+        result.value[1] = '\0';
         return result;
-        
     }
     
     if (c == '!')
@@ -156,11 +155,11 @@ Token scan_token(FILE* f)
         {
             result.token = TOKEN_NOT_EQUAL;
             result.value[1] = '=';
-            result.value[2] = 0;
+            result.value[2] = '\0';
             return result;
         }
         result.token = TOKEN_NOT;
-        result.value[1] = 0;
+        result.value[1] = '\0';
         return result;
     }
 
@@ -169,13 +168,13 @@ Token scan_token(FILE* f)
         return build_integer_token(f, c);
     }
 
-    if (c == '_' || isalnum(c))
+    if (c == '_' || isalpha(c))
     {
         return build_identifier_token(f, c);
     }
 
     result.value[0] = c;
-    result.value[1] = 0;
+    result.value[1] = '\0';
     result.token = TOKEN_UNKNOWN;
     return result;
 }
