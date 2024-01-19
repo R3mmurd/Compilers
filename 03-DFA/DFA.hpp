@@ -33,42 +33,42 @@ public:
     using transition_table_type = std::unordered_map<pair_type, state_type, PairHash>;
     using state_set_type        = std::unordered_set<state_type>;
 
-    DFA(std::string_view state_prefix = "q") noexcept
+    DFA(std::string_view state_prefix = "s") noexcept
         : prefix{state_prefix}
     {
 
     }
 
-    void set_initial_state(size_t q) noexcept
+    void set_initial_state(size_t state) noexcept
     {
-        q0 = to_state(q);
+        initial_state = to_state(state);
     }
 
-    void add_acceptation_state(size_t q)
+    void add_acceptation_state(size_t state)
     {
-        f_set.insert(to_state(q));
+        acceptation_state_set.insert(to_state(state));
     }
 
-    void add_acceptation_states(std::initializer_list<size_t> qs)
+    void add_acceptation_states(std::initializer_list<size_t> states)
     {
-        for (auto q: qs)
+        for (auto state: states)
         {
-            f_set.insert(to_state(q));
+            acceptation_state_set.insert(to_state(state));
         }
     }
 
-    void add_transition(size_t q0, size_t q1, symbol_type s) noexcept
+    void add_transition(size_t state0, size_t state1, symbol_type symbol) noexcept
     {
-        auto s0 = to_state(q0);
-        auto s1 = to_state(q1);
-        s_set.emplace(s0);
-        s_set.emplace(s1);
-        transition_table.emplace(std::make_pair(s0, s), s1);
+        auto s0 = to_state(state0);
+        auto s1 = to_state(state1);
+        state_set.emplace(s0);
+        state_set.emplace(s1);
+        transition_table.emplace(std::make_pair(s0, symbol), s1);
     }
 
-    bool match(word_type w) noexcept
+    bool match(word_type word) noexcept
     {
-        return ext_delta(q0, w).first;
+        return ext_delta(initial_state, word).first;
     }
 
     void to_dot(std::ostream& output) noexcept
@@ -77,11 +77,11 @@ public:
         
         output << "  rankdir = LR;\n\n";
 
-        for (const auto& p: s_set)
+        for (const auto& state: state_set)
         {
-            output << "  " << p << "[shape = ";
+            output << "  " << state << "[shape = ";
 
-            if (f_set.find(p) != f_set.end())
+            if (acceptation_state_set.find(state) != acceptation_state_set.end())
             {
                 output << "double";
             }
@@ -99,14 +99,14 @@ public:
     }
 
 private:
-    std::string to_state(size_t s) noexcept
+    std::string to_state(size_t state) noexcept
     {
-        return prefix + std::to_string(s);
+        return prefix + std::to_string(state);
     }
 
-    result_type delta(const state_type& q, symbol_type s) noexcept
+    result_type delta(const state_type& state, symbol_type symbol) noexcept
     {
-        auto it = transition_table.find(std::make_pair(q, s));
+        auto it = transition_table.find(std::make_pair(state, symbol));
 
         if (it == transition_table.end())
         {
@@ -116,29 +116,29 @@ private:
         return std::make_pair(true, it->second);
     }
 
-    result_type ext_delta(const state_type& q, word_type w)
+    result_type ext_delta(const state_type& state, word_type word)
     {
-        if (w.size() == 0)
+        if (word.size() == 0)
         {
-            return std::make_pair(true, q);
+            return std::make_pair(true, state);
         }
 
-        symbol_type a = w[w.size() - 1];
-        word_type rw = w.substr(0, w.size() - 1);
+        symbol_type symbol = word[word.size() - 1];
+        word_type remaining_word = word.substr(0, word.size() - 1);
 
-        result_type result = ext_delta(q, rw);
+        result_type result = ext_delta(state, remaining_word);
 
         if (!result.first)
         {
             return result;
         }
 
-        return delta(result.second, a);
+        return delta(result.second, symbol);
     }
 
-    state_set_type s_set;
+    state_set_type state_set;
     transition_table_type transition_table;
-    state_set_type f_set;
-    state_type q0 = "q0";
+    state_set_type acceptation_state_set;
+    state_type initial_state = "s0";
     const std::string prefix;
 };
