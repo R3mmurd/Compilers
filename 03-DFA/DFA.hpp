@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <ostream>
 #include <string_view>
 #include <unordered_map>
 #include <unordered_set>
@@ -30,7 +31,7 @@ public:
     };
 
     using transition_table_type = std::unordered_map<pair_type, state_type, PairHash>;
-    using f_set_type            = std::unordered_set<state_type>;
+    using state_set_type        = std::unordered_set<state_type>;
 
     DFA(std::string_view state_prefix = "q") noexcept
         : prefix{state_prefix}
@@ -58,12 +59,43 @@ public:
 
     void add_transition(size_t q0, size_t q1, symbol_type s) noexcept
     {
-        transition_table.emplace(std::make_pair(to_state(q0), s), to_state(q1));
+        auto s0 = to_state(q0);
+        auto s1 = to_state(q1);
+        s_set.emplace(s0);
+        s_set.emplace(s1);
+        transition_table.emplace(std::make_pair(s0, s), s1);
     }
 
     bool match(word_type w) noexcept
     {
         return ext_delta(q0, w).first;
+    }
+
+    void to_dot(std::ostream& output) noexcept
+    {
+        output << "digraph\n{\n";
+        
+        output << "  rankdir = LR;\n\n";
+
+        for (const auto& p: s_set)
+        {
+            output << "  " << p << "[shape = ";
+
+            if (f_set.find(p) != f_set.end())
+            {
+                output << "double";
+            }
+            
+            output << "circle];\n";
+        }
+
+        for (const auto& p: transition_table)
+        {
+            output << "  " << p.first.first << " -> " << p.second  
+                   << "[label = \"" << p.first.second << "\"]\n";
+        }
+
+        output << "}";
     }
 
 private:
@@ -104,8 +136,9 @@ private:
         return delta(result.second, a);
     }
 
+    state_set_type s_set;
     transition_table_type transition_table;
-    f_set_type f_set;
+    state_set_type f_set;
     state_type q0 = "q0";
     const std::string prefix;
 };

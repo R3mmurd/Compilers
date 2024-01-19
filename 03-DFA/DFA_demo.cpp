@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string_view>
 #include <unordered_map>
 #include <unordered_set>
@@ -54,12 +55,21 @@ int main(int argc, char* argv[])
 
     for (size_t i = 0; i < automata.size(); ++i)
     {
+        std::ofstream out{dfa_names[i] + ".dot"};
+        automata[i].to_dot(out);
+        out.close();
+    }
+
+    for (size_t i = 0; i < automata.size(); ++i)
+    {
         if (automata[i].match(argv[1]))
         {
             std::cout << argv[1] << " matches with " << dfa_names[i] << std::endl;
             return EXIT_SUCCESS;
         }
     }
+
+    
 
     std::cout << "Not match found for " << argv[1] << std::endl;
     
