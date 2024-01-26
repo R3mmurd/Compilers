@@ -1,7 +1,3 @@
-eval
-
-a => b
-
 a_knight = "A is a knight"
 a_knave = "A is a Knave"
 
