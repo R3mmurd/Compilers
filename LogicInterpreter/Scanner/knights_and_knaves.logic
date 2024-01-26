@@ -1,0 +1,30 @@
+a_knight = "A is a knight"
+a_knave = "A is a Knave"
+
+knowledge1 = ((a_knight v a_knave) ^ ¬(a_knight ^ a_knave)) ^ 
+             (a_knight <=> (a_knight ^ a_knave))
+
+eval knowledge1
+
+b_knight = "B is a Knight"
+b_knave = "B is a Knave"
+
+knowledge2 = ((a_knight v a_knave) ^ ¬(a_knight ^ a_knave)) ^ 
+             ((b_knight v b_knave) ^ ¬(b_knight ^ b_knave)) ^ 
+             (a_knight <=> (a_knight <=> b_knight)) ^
+             (b_knight <=> (a_knight <=> b_knave))
+
+eval knowledge2
+
+c_knight = "C is a Knight"
+c_knave = "C is a Knave"
+
+knowledge3 = ((a_knight v a_knave) ^ ¬(a_knight ^ a_knave)) ^ 
+             ((b_knight v b_knave) ^ ¬(b_knight ^ b_knave)) ^ 
+             ((c_knight v c_knave) ^ ¬(c_knight ^ c_knave)) ^
+             (a_knight <=> (a_knight v a_knave)) ^
+             (b_knight <=> (a_knight <=> a_knave)) ^
+             (b_knight <=> c_knave) ^
+             (c_knight <=> a_knight)
+
+eval knowledge3
