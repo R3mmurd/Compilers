@@ -1,6 +1,6 @@
 #pragma once
 
-enum __token_t
+typedef enum
 {
   TOKEN_EOF = 0,
   TOKEN_STRING = 258,
@@ -14,9 +14,7 @@ enum __token_t
   TOKEN_LPAREN = 266,
   TOKEN_RPAREN = 267,
   TOKEN_EVAL = 268
-};
-
-typedef enum __token_t token_t;
+} token_t;
 
 inline const char* token_str(token_t t)
 {

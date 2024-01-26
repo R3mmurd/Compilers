@@ -9,7 +9,7 @@ IDENTIFIER (_|{LETTER})({DIGIT}|{LETTER}|_)*
 TEXT       \"({DIGIT}|{LETTER}|{SPACE})*\"
 
 %%
-{SPACE}      {}
+{SPACE}      { /* Ignore */ }
 "="          { return TOKEN_ASSIGN; }
 "¬"          { return TOKEN_NOT; }
 "^"          { return TOKEN_AND; }

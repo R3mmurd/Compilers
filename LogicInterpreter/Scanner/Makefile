@@ -1,10 +1,10 @@
 CC = gcc
 FLEX = flex
 
-all: lexer
+all: scanner
 
-lexer: scanner.o main.o
-	$(CC) -v scanner.o main.o -o lexer
+scanner: scanner.o main.o
+	$(CC) -v scanner.o main.o -o scanner
 
 scanner.o: token.h scanner.c
 	$(CC) -c scanner.c
@@ -17,4 +17,4 @@ main.o: token.h main.c
 
 .PHONY:
 clean:
-	$(RM) *.o scanner.c lexer
+	$(RM) *.o scanner.c scanner
