@@ -9,7 +9,7 @@ all: example demo_c_function
 example:
 	$(CC) $@.c -o $@
 
-demo_c_function: $(OBJ)
+demo_c_function: $(OBJ) demo_c_function.cpp
 	$(CXX) -I. $@.cpp -o $@ $(OBJ)
 
 ast_node_interface.o: ast_node_interface.cpp ast_node_interface.hpp 
