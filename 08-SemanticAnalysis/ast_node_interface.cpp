@@ -47,6 +47,7 @@ std::pair<bool, Datatype*> body_type_check(const Body& body) noexcept
         if (stmt_type.second != nullptr)
         {
             delete stmt_type.second;
+            stmt_type.second = nullptr;
         }
 
         if (!stmt_type.first)
@@ -79,6 +80,7 @@ void destroy_param_list(ParamList& param_list) noexcept
         param_list.pop_front();
         param.second->destroy();
         delete param.second;
+        param.second = nullptr;
     }
 }
 
@@ -112,7 +114,8 @@ std::pair<bool, Datatype*> param_list_type_check(const ParamList& param_list) no
         auto param_type = param.second->type_check();
         if (param_type.second != nullptr)
         {
-            delete param.second;
+            delete param_type.second;
+            param_type.second = nullptr;
         }
 
         if (!param_type.first)

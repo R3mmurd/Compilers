@@ -23,6 +23,8 @@ public:
 
     bool resolve_name(SymbolTable& symbol_table) noexcept override;
 
+    Expression* get_expression() const noexcept;
+
 protected:
     Expression* expression;
 };

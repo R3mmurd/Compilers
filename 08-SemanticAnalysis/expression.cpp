@@ -9,6 +9,7 @@ void UnaryExpression::destroy() noexcept
 {
     this->expression->destroy();
     delete this->expression;
+    this->expression = nullptr;
 }
 
 bool UnaryExpression::equal(ASTNodeInterface* other) const noexcept
@@ -20,6 +21,11 @@ bool UnaryExpression::equal(ASTNodeInterface* other) const noexcept
 bool UnaryExpression::resolve_name(SymbolTable& symbol_table) noexcept
 {
     return this->expression->resolve_name(symbol_table);
+}
+
+Expression* UnaryExpression::get_expression() const noexcept
+{
+    return this->expression;
 }
 
 ASTNodeInterface* NotExpression::copy() const noexcept
@@ -35,19 +41,18 @@ bool NotExpression::equal(ASTNodeInterface* other) const noexcept
 
 std::pair<bool, Datatype*> NotExpression::type_check() const noexcept
 {
-    auto bool_type = new BooleanDatatype{};
     auto expr_type = this->expression->type_check();
-    bool result = expr_type.first && expr_type.second->equal(bool_type);
+    bool result = expr_type.first && expr_type.second->is<BooleanDatatype>();
+    expr_type.second->destroy();
     delete expr_type.second;
+    expr_type.second = nullptr;
 
     if (!result)
     {
-        delete bool_type;
-        bool_type = nullptr;
         return std::make_pair(false, nullptr);
     }
 
-    return std::make_pair(true, bool_type);
+    return std::make_pair(true, new BooleanDatatype{});
 }
 
 ASTNodeInterface* IncrementExpression::copy() const noexcept
@@ -63,19 +68,18 @@ bool IncrementExpression::equal(ASTNodeInterface* other) const noexcept
 
 std::pair<bool, Datatype*> IncrementExpression::type_check() const noexcept
 {
-    auto int_type = new IntegerDatatype{};
     auto expr_type = this->expression->type_check();
-    bool result = expr_type.second->equal(int_type);
+    bool result = expr_type.second->is<IntegerDatatype>();
+    expr_type.second->destroy();
     delete expr_type.second;
+    expr_type.second = nullptr;
     
     if (!result)
     {
-        delete int_type;
-        int_type = nullptr;
         return std::make_pair(false, nullptr);
     }
 
-    return std::make_pair(true, int_type);
+    return std::make_pair(true, new IntegerDatatype{});
 }
 
 ASTNodeInterface* DecrementExpression::copy() const noexcept
@@ -91,19 +95,18 @@ bool DecrementExpression::equal(ASTNodeInterface* other) const noexcept
 
 std::pair<bool, Datatype*> DecrementExpression::type_check() const noexcept
 {
-    auto int_type = new IntegerDatatype{};
     auto expr_type = this->expression->type_check();
-    bool result = expr_type.second->equal(int_type);
+    bool result = expr_type.second->is<IntegerDatatype>();
+    expr_type.second->destroy();
     delete expr_type.second;
+    expr_type.second = nullptr;
     
     if (!result)
     {
-        delete int_type;
-        int_type = nullptr;
         return std::make_pair(false, nullptr);
     }
 
-    return std::make_pair(true, int_type);
+    return std::make_pair(true, new IntegerDatatype{});
 }
 
 BinaryExpression::BinaryExpression(Expression* left_expr, Expression* right_expr) noexcept
@@ -113,11 +116,13 @@ void BinaryExpression::destroy() noexcept
 {
     this->left_expression->destroy();
     delete this->left_expression;
+    this->left_expression = nullptr;
 
     if (this->right_expression != nullptr)
     {
         this->right_expression->destroy();
         delete this->right_expression;
+        this->right_expression = nullptr;
     }
 }
 
@@ -146,37 +151,29 @@ bool BinaryExpression::resolve_name(SymbolTable& symbol_table) noexcept
     return left_result;
 }
 
-Expression* BinaryExpression::get_left_expression() const noexcept
-{
-    return this->left_expression;
-}
-
-Expression* BinaryExpression::get_right_expression() const noexcept
-{
-    return this->right_expression;
-}
-
 std::pair<bool, Datatype*> BinaryExpression::boolean_operation_type_check() const noexcept
 {
-    auto bool_type = new BooleanDatatype{};
     auto left_expr_type = this->left_expression->type_check();
     auto right_expr_type = this->right_expression->type_check();
     bool result = left_expr_type.first &&
         right_expr_type.first &&
-        left_expr_type.second->equal(bool_type) &&
-        right_expr_type.second->equal(bool_type);
+        left_expr_type.second->is<BooleanDatatype>() &&
+        right_expr_type.second->is<BooleanDatatype>();
 
+    left_expr_type.second->destroy();
     delete left_expr_type.second;
+    left_expr_type.second = nullptr;
+
+    right_expr_type.second->destroy();
     delete right_expr_type.second;
+    right_expr_type.second = nullptr;
     
     if (!result)
     {
-        delete bool_type;
-        bool_type = nullptr;
         return std::make_pair(false, nullptr);
     }
 
-    return std::make_pair(true, bool_type);
+    return std::make_pair(true, new BooleanDatatype{});
 }
 
 std::pair<bool, Datatype*> BinaryExpression::comparison_type_check() const noexcept
@@ -186,6 +183,20 @@ std::pair<bool, Datatype*> BinaryExpression::comparison_type_check() const noexc
 
     if (!left_expr_type.first || !right_expr_type.first)
     {
+        if (left_expr_type.second != nullptr)
+        {
+            left_expr_type.second->destroy();
+            delete left_expr_type.second;
+            left_expr_type.second = nullptr;
+        }
+
+        if (right_expr_type.second != nullptr)
+        {
+            right_expr_type.second->destroy();
+            delete right_expr_type.second;
+            right_expr_type.second = nullptr;
+        }
+
         return std::make_pair(false, nullptr);
     }
 
@@ -193,14 +204,26 @@ std::pair<bool, Datatype*> BinaryExpression::comparison_type_check() const noexc
         left_expr_type.second->is<FunctionDatatype>() || right_expr_type.second->is<VoidDatatype>() ||
         right_expr_type.second->is<ArrayDatatype>() || right_expr_type.second->is<FunctionDatatype>())
     {
+        left_expr_type.second->destroy();
         delete left_expr_type.second;
+        left_expr_type.second = nullptr;
+
+        right_expr_type.second->destroy();
         delete right_expr_type.second;
+        right_expr_type.second = nullptr;
+
         return std::make_pair(false, nullptr);    
     }
 
     bool result = left_expr_type.second->equal(right_expr_type.second);
+    
+    left_expr_type.second->destroy();
     delete left_expr_type.second;
+    left_expr_type.second = nullptr;
+
+    right_expr_type.second->destroy();
     delete right_expr_type.second;
+    right_expr_type.second = nullptr;
     
     if (!result)
     {
@@ -212,24 +235,37 @@ std::pair<bool, Datatype*> BinaryExpression::comparison_type_check() const noexc
 
 std::pair<bool, Datatype*> BinaryExpression::arithmetic_operation_type_check() const noexcept
 {
-    auto int_type = new IntegerDatatype{};
     auto left_expr_type = this->left_expression->type_check();
     auto right_expr_type = this->right_expression->type_check();
     bool result = left_expr_type.first &&
         right_expr_type.first &&
-        left_expr_type.second->equal(int_type) &&
-        right_expr_type.second->equal(int_type);
+        left_expr_type.second->is<IntegerDatatype>() &&
+        right_expr_type.second->is<IntegerDatatype>();
+
+    left_expr_type.second->destroy();
     delete left_expr_type.second;
+    left_expr_type.second = nullptr;
+
+    right_expr_type.second->destroy();
     delete right_expr_type.second;
+    right_expr_type.second = nullptr;
     
     if (!result)
     {
-        delete int_type;
-        int_type = nullptr;
         return std::make_pair(false, nullptr);
     }
 
-    return std::make_pair(true, int_type);
+    return std::make_pair(true, new IntegerDatatype{});
+}
+
+Expression* BinaryExpression::get_left_expression() const noexcept
+{
+    return this->left_expression;
+}
+
+Expression* BinaryExpression::get_right_expression() const noexcept
+{
+    return this->right_expression;
 }
 
 ASTNodeInterface* AndExpression::copy() const noexcept
@@ -528,19 +564,25 @@ std::pair<bool, Datatype*> CallExpression::type_check() const noexcept
 
     if (!left_type.first || !left_type.second->is<FunctionDatatype>())
     {
-        delete left_type.second;
+        if (left_type.second != nullptr)
+        {
+            left_type.second->destroy();
+            delete left_type.second;
+            left_type.second = nullptr;
+        }
         return std::make_pair(false, nullptr);
     }
 
     auto fct_type = dynamic_cast<FunctionDatatype*>(left_type.second);
-
     auto arg_expr = dynamic_cast<ArgExpression*>(this->right_expression);
 
     for (const auto& param: fct_type->get_parameters())
     {
         if (arg_expr == nullptr)
         {
+            left_type.second->destroy();
             delete left_type.second;
+            left_type.second = nullptr;
             return std::make_pair(false, nullptr);
         }
     
@@ -548,22 +590,33 @@ std::pair<bool, Datatype*> CallExpression::type_check() const noexcept
 
         if (!arg_type.second->equal(param.second))
         {
+            arg_type.second->destroy();
             delete arg_type.second;
+            arg_type.second = nullptr;
+
+            left_type.second->destroy();
             delete left_type.second;
+            left_type.second = nullptr;
+
             return std::make_pair(false, nullptr);
         }
 
+        arg_type.second->destroy();
         delete arg_type.second;
+        arg_type.second = nullptr;
 
         arg_expr = dynamic_cast<ArgExpression*>(arg_expr->get_right_expression());
     }
 
     auto result = dynamic_cast<Datatype*>(fct_type->get_return_type()->copy());
 
-    delete fct_type;
+    left_type.second->destroy();
+    delete left_type.second;
+    left_type.second = nullptr;
 
     if (arg_expr != nullptr)
     {
+        result->destroy();
         delete result;
         result = nullptr;
         return std::make_pair(false, nullptr);
@@ -593,15 +646,27 @@ std::pair<bool, Datatype*> SubscriptExpression::type_check() const noexcept
 
     if (!left_type.second->is<ArrayDatatype>() || !right_type.second->is<IntegerDatatype>())
     {
+        left_type.second->destroy();
         delete left_type.second;
+        left_type.second = nullptr;
+        
+        right_type.second->destroy();
+        delete right_type.second;
+        right_type.second = nullptr;
+
         delete right_type.second;
         return std::make_pair(false, nullptr);
     }
 
     auto result_type = dynamic_cast<Datatype*>(dynamic_cast<ArrayDatatype*>(left_type.second)->get_inner_datatype()->copy());
 
+    left_type.second->destroy();
     delete left_type.second;
+    left_type.second = nullptr;
+    
+    right_type.second->destroy();
     delete right_type.second;
+    right_type.second = nullptr;
 
     return std::make_pair(true, result_type);
 }
@@ -628,10 +693,13 @@ std::pair<bool, Datatype*> AssignmentExpression::type_check() const noexcept
         right_type.first &&
         left_type.second->equal(right_type.second);
 
+    right_type.second->destroy();
     delete right_type.second;
+    right_type.second = nullptr;
 
     if (!result)
     {
+        left_type.second->destroy();
         delete left_type.second;
         left_type.second = nullptr;
         left_type.first = false;

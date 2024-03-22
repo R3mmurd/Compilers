@@ -12,8 +12,7 @@ struct Symbol
 {
     Datatype* type;
     std::string name;
-    int which;
-
+    
     static std::shared_ptr<Symbol> build(Datatype* type, std::string_view name) noexcept;
 };
 
@@ -23,7 +22,9 @@ public:
     using TableType = std::unordered_map<std::string, std::shared_ptr<Symbol>>;
     using TableStack = std::vector<TableType>;
 
-    SymbolTable() = default;
+    SymbolTable() noexcept;
+
+    ~SymbolTable() noexcept;
 
     void enter_scope() noexcept;
 

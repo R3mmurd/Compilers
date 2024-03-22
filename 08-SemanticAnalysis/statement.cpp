@@ -12,6 +12,7 @@ void DeclarationStatement::destroy() noexcept
 {
     this->declaration->destroy();
     delete this->declaration;
+    this->declaration = nullptr;
 }
 
 ASTNodeInterface* DeclarationStatement::copy() const noexcept
@@ -42,6 +43,7 @@ void ExpressionStatement::destroy() noexcept
 {
     this->expression->destroy();
     delete this->expression;
+    this->expression = nullptr;
 }
 
 ASTNodeInterface* ExpressionStatement::copy() const noexcept
@@ -129,8 +131,10 @@ void ForStatement::destroy() noexcept
     ExpressionStatement::destroy();
     this->init_expression->destroy();
     delete this->init_expression;
+    this->init_expression = nullptr;
     this->next_expression->destroy();
     delete this->next_expression;
+    this->next_expression = nullptr;
     destroy_body(this->body);
 }
 

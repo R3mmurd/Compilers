@@ -13,13 +13,12 @@ VariableDeclaration::VariableDeclaration(std::string_view var_name, Datatype* da
 
 void VariableDeclaration::destroy() noexcept
 {
-    if (this->expression == nullptr)
+    if (this->expression != nullptr)
     {
-        return;
+        this->expression->destroy();
+        delete this->expression;   
+        this->expression = nullptr;
     }
-
-    this->expression->destroy();
-    delete this->expression;
 }
 
 ASTNodeInterface* VariableDeclaration::copy() const noexcept
@@ -49,6 +48,7 @@ std::pair<bool, Datatype*> VariableDeclaration::type_check() const noexcept
         auto expr_type = this->expression->type_check();
         if (expr_type.second != nullptr)
         {
+            expr_type.second->destroy();
             delete expr_type.second;
         }
         return std::make_pair(expr_type.first, nullptr);
@@ -79,6 +79,9 @@ FunctionDeclaration::FunctionDeclaration(std::string_view fct_name, Datatype* da
 
 void FunctionDeclaration::destroy() noexcept
 {
+    this->type->destroy();
+    delete this->type;
+    this->type = nullptr;
     destroy_body(this->body);
 }
 

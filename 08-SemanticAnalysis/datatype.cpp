@@ -69,6 +69,7 @@ void ArrayDatatype::destroy() noexcept
 {
     this->inner_datatype->destroy();
     delete this->inner_datatype;
+    this->inner_datatype = nullptr;
 }
 
 ASTNodeInterface* ArrayDatatype::copy() const noexcept 
@@ -99,14 +100,8 @@ void FunctionDatatype::destroy() noexcept
 {
     this->return_type->destroy();
     delete this->return_type;
-
-    while (!this->parameters.empty())
-    {
-        Param param = this->parameters.front();
-        this->parameters.pop_front();
-        param.second->destroy();
-        delete param.second;
-    }
+    this->return_type = nullptr;
+    destroy_param_list(this->parameters);
 }
 
 ASTNodeInterface* FunctionDatatype::copy() const noexcept 

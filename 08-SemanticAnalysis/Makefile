@@ -1,14 +1,11 @@
 CXX = clang++ -std=c++17 -O0 -g
 OBJ = ast_node_interface.o datatype.o declaration.o expression.o statement.o symbol_table.o
 
-default: demo_c_function
+default: demo_program
 
-all: demo_c_function
+all: demo_program
 
-example:
-	$(CC) $@.c -o $@
-
-demo_c_function: $(OBJ) demo_c_function.cpp
+demo_program: $(OBJ) demo_program.cpp
 	$(CXX) -I. $@.cpp -o $@ $(OBJ)
 
 ast_node_interface.o: ast_node_interface.cpp ast_node_interface.hpp 
@@ -31,4 +28,4 @@ symbol_table.o: symbol_table.cpp symbol_table.hpp
 
 .PHONY:
 clean:
-	$(RM) $(OBJ) example demo_c_function
+	$(RM) $(OBJ) demo_program

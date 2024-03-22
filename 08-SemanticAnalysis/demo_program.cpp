@@ -1,7 +1,8 @@
 /*
-    Compilers: Abstract Syntax Tree (AST)
+    Compilers: Semantic Analysis
 
-    This program creates the AST for the following function in C
+    This program creates the AST for the following program
+
 
     int accum_from_zero_to(int x)
     {
@@ -16,21 +17,12 @@
         return total;
     }
 
-    The following function is another syntax of a hypothetical programming
-    language. This function would be solved by the same AST
-
-    function accum_from_zero(x: integer) : integer
-    begin
-        var i : integer;
-        var total : integer = 0;
-
-        for (i := 0 ... i < x ... inc i)
-        begin
-            total := total + i;
-        end;
-
-        return total;
-    end;
+    int main()
+    {
+        int result = accum_from_zero_to(10);
+        print result; // Hypotetical print statement
+        return 0;
+    }
 */
 
 #include <iostream>
@@ -44,7 +36,7 @@
 int main()
 {
     auto function_declaration = new FunctionDeclaration{
-        "accum_from_zero_to",                                        // --> Function name
+        "accum_from_zero_to",                             // --> Function name
         new FunctionDatatype{                             // --> Function type
             new IntegerDatatype{},
             ParamList{Param{"x", new IntegerDatatype{}}}
@@ -93,39 +85,60 @@ int main()
         }
     };
 
-    SymbolTable symbol_table;
-    symbol_table.enter_scope();
+    auto main_function = new FunctionDeclaration{
+        "main",                                           // --> Function name
+        new FunctionDatatype{                             // --> Function type
+            new IntegerDatatype{},
+            ParamList{}
+        },
+        Body{                                             // --> Function body
+            new DeclarationStatement{                     // --> int i;
+                new VariableDeclaration{                  // int result = accum_from_zero_to(10);
+                    "result",
+                    new IntegerDatatype{},
+                    new CallExpression{
+                        new NameExpression{"accum_from_zero_to"},
+                        new ArgExpression{new IntExpression{10}, nullptr}
+                    }
+                }
+            },
+            new PrintStatement{new NameExpression{"result"}}, // --> print result;
+            new ReturnStatement{new IntExpression{0}}         // --> return 0;
+        }
+    };
 
-    bool result = function_declaration->resolve_name(symbol_table);
+    auto program = Body{
+        new DeclarationStatement{function_declaration},
+        new DeclarationStatement{main_function}
+    };
 
-    symbol_table.exit_scope();
+    bool resolve_name_result = false;
+    {
+        SymbolTable symbol_table;
+        resolve_name_result = resolve_name_body(program, symbol_table);
+    }
 
-    std::cout << std::boolalpha << "Result of name resolution: " << result << std::endl;
+    std::cout << std::boolalpha << "Program name resolution: " << resolve_name_result << std::endl;
 
-    auto function_declaration_copy = function_declaration->copy();
+    auto program_copy = copy_body(program);
 
-    result = function_declaration->equal(function_declaration_copy);
+    bool program_equal_result = equal_body(program, program_copy);
 
-    std::cout << std::boolalpha << "Function declaration equality: " << result << std::endl;
+    std::cout << std::boolalpha << "Program equality: " << program_equal_result << std::endl;
 
-    std::cout << std::boolalpha << "Function declaration type check: " << function_declaration->type_check().first << std::endl;
+    auto program_type = body_type_check(program);
 
+    std::cout << std::boolalpha << "Program type check: " << program_type.first << std::endl;
 
-    function_declaration->destroy();
-    delete function_declaration;
-    function_declaration_copy->destroy();
-    delete function_declaration_copy;
+    if (program_type.second != nullptr)
+    {
+        program_type.second->destroy();
+        delete program_type.second;
+        program_type.second = nullptr;
+    }
 
-    auto void_type = new VoidDatatype{};
-    auto int_type1 = new IntegerDatatype{};
-    auto int_type2 = new IntegerDatatype{};
-
-    std::cout << std::boolalpha << "void == int: " << void_type->equal(int_type1) << std::endl;
-    std::cout << std::boolalpha << "int == int: " << int_type1->equal(int_type2) << std::endl;
-
-    delete void_type;
-    delete int_type1;
-    delete int_type2;
+    destroy_body(program);
+    destroy_body(program_copy);
 
     return EXIT_SUCCESS;
 }

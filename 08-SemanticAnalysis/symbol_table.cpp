@@ -8,6 +8,16 @@ std::shared_ptr<Symbol> Symbol::build(Datatype* type, std::string_view name) noe
     return symbol;
 }
 
+SymbolTable::SymbolTable() noexcept
+{
+    this->enter_scope();
+}
+
+SymbolTable::~SymbolTable() noexcept
+{
+    this->exit_scope();
+}
+
 void SymbolTable::enter_scope() noexcept
 {
     this->scopes.push_back(TableType{});
