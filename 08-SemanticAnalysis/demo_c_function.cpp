@@ -102,7 +102,30 @@ int main()
 
     std::cout << std::boolalpha << "Result of name resolution: " << result << std::endl;
 
+    auto function_declaration_copy = function_declaration->copy();
+
+    result = function_declaration->equal(function_declaration_copy);
+
+    std::cout << std::boolalpha << "Function declaration equality: " << result << std::endl;
+
+    std::cout << std::boolalpha << "Function declaration type check: " << function_declaration->type_check().first << std::endl;
+
+
     function_declaration->destroy();
+    delete function_declaration;
+    function_declaration_copy->destroy();
+    delete function_declaration_copy;
+
+    auto void_type = new VoidDatatype{};
+    auto int_type1 = new IntegerDatatype{};
+    auto int_type2 = new IntegerDatatype{};
+
+    std::cout << std::boolalpha << "void == int: " << void_type->equal(int_type1) << std::endl;
+    std::cout << std::boolalpha << "int == int: " << int_type1->equal(int_type2) << std::endl;
+
+    delete void_type;
+    delete int_type1;
+    delete int_type2;
 
     return EXIT_SUCCESS;
 }

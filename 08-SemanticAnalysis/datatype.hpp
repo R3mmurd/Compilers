@@ -4,7 +4,14 @@
 
 class Datatype : public ASTNodeInterface
 {
+public:
+    template <typename Type>
+    bool is() const noexcept
+    {
+        return dynamic_cast<const Type*>(this) != nullptr;
+    }
 
+    std::pair<bool, Datatype*> type_check() const noexcept override;
 };
 
 class BasicDatatype : public Datatype
@@ -17,27 +24,42 @@ public:
 
 class VoidDatatype : public BasicDatatype
 {
+public:
     ASTNodeInterface* copy() const noexcept override;
+
+    bool equal(ASTNodeInterface* other) const noexcept override;
 };
 
 class BooleanDatatype : public BasicDatatype
 {
+public:
     ASTNodeInterface* copy() const noexcept override;
+
+    bool equal(ASTNodeInterface* other) const noexcept override;
 };
 
 class CharacterDatatype : public BasicDatatype
 {
+public:
     ASTNodeInterface* copy() const noexcept override;
+
+    bool equal(ASTNodeInterface* other) const noexcept override;
 };
 
 class IntegerDatatype : public BasicDatatype
 {
+public:
     ASTNodeInterface* copy() const noexcept override;
+
+    bool equal(ASTNodeInterface* other) const noexcept override;
 };
 
 class StringDatatype : public BasicDatatype
 {
+public:
     ASTNodeInterface* copy() const noexcept override;
+
+    bool equal(ASTNodeInterface* other) const noexcept override;
 };
 
 class ArrayDatatype : public Datatype
@@ -49,8 +71,11 @@ public:
 
     ASTNodeInterface* copy() const noexcept override;
 
+    bool equal(ASTNodeInterface* other) const noexcept override;
+
     bool resolve_name(SymbolTable& symbol_table) noexcept override;
 
+    Datatype* get_inner_datatype() const noexcept;
 private:
     Datatype* inner_datatype;
 };
@@ -64,7 +89,13 @@ public:
 
     ASTNodeInterface* copy() const noexcept override;
 
+    bool equal(ASTNodeInterface* other) const noexcept override;
+
     bool resolve_name(SymbolTable& symbol_table) noexcept override;
+    
+    Datatype* get_return_type() const noexcept;
+
+    const ParamList& get_parameters() const noexcept;
 
 private:
     Datatype* return_type;

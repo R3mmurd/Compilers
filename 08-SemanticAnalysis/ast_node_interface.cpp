@@ -34,7 +34,28 @@ bool equal_body(const Body& body1, const Body& body2) noexcept
         return false;
     }
 
-    return std::equal(body1.begin(), body1.end(), body2.begin());
+    return std::equal(body1.begin(), body1.end(), body2.begin(),
+        [] (Statement* stmt1, Statement* stmt2) { return stmt1->equal(stmt2); });
+}
+
+std::pair<bool, Datatype*> body_type_check(const Body& body) noexcept
+{
+    for (auto stmt : body)
+    {
+        auto stmt_type = stmt->type_check();
+
+        if (stmt_type.second != nullptr)
+        {
+            delete stmt_type.second;
+        }
+
+        if (!stmt_type.first)
+        {
+            return std::make_pair(false, nullptr);
+        }
+    }
+
+    return std::make_pair(true, nullptr);
 }
 
 bool resolve_name_body(Body& body, SymbolTable& symbol_table) noexcept
@@ -81,7 +102,26 @@ bool equal_param_list(const ParamList& param_list1, const ParamList& param_list2
     }
 
     return std::equal(param_list1.begin(), param_list1.end(), param_list2.begin(), param_list2.end(),
-        [] (const Param& param1, const Param& param2) { return param1.first == param2.first && param1.second->equal(param2.second); });
+        [] (const Param& param1, const Param& param2) { return param1.second->equal(param2.second); });
+}
+
+std::pair<bool, Datatype*> param_list_type_check(const ParamList& param_list) noexcept
+{
+    for (const Param& param: param_list)
+    {
+        auto param_type = param.second->type_check();
+        if (param_type.second != nullptr)
+        {
+            delete param.second;
+        }
+
+        if (!param_type.first)
+        {
+            return std::make_pair(false, nullptr);
+        }
+    }
+
+    return std::make_pair(true, nullptr);
 }
 
 bool resolve_name_param_list(const ParamList& param_list, SymbolTable& symbol_table) noexcept

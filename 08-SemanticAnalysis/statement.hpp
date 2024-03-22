@@ -16,6 +16,10 @@ public:
 
     ASTNodeInterface* copy() const noexcept override;
 
+    bool equal(ASTNodeInterface* other) const noexcept override;
+
+    std::pair<bool, Datatype*> type_check() const noexcept override;
+
     bool resolve_name(SymbolTable& symbol_table) noexcept override;
 
 private:
@@ -30,6 +34,10 @@ public:
     void destroy() noexcept override;
 
     ASTNodeInterface* copy() const noexcept override;
+
+    bool equal(ASTNodeInterface* other) const noexcept override;
+
+    std::pair<bool, Datatype*> type_check() const noexcept override;
 
     bool resolve_name(SymbolTable& symbol_table) noexcept override;
 
@@ -46,6 +54,10 @@ public:
 
     ASTNodeInterface* copy() const noexcept override;
 
+    bool equal(ASTNodeInterface* other) const noexcept override;
+
+    std::pair<bool, Datatype*> type_check() const noexcept override;
+
     bool resolve_name(SymbolTable& symbol_table) noexcept override;
 
 private:
@@ -61,6 +73,10 @@ public:
     void destroy() noexcept override;
 
     ASTNodeInterface* copy() const noexcept override;
+
+    bool equal(ASTNodeInterface* other) const noexcept override;
+
+    std::pair<bool, Datatype*> type_check() const noexcept override;
 
     bool resolve_name(SymbolTable& symbol_table) noexcept override;
 
@@ -79,6 +95,10 @@ public:
 
     ASTNodeInterface* copy() const noexcept override;
 
+    bool equal(ASTNodeInterface* other) const noexcept override;
+
+    std::pair<bool, Datatype*> type_check() const noexcept override;
+
     bool resolve_name(SymbolTable& symbol_table) noexcept override;
 
 private:
@@ -91,6 +111,8 @@ public:
     using ExpressionStatement::ExpressionStatement;
     
     ASTNodeInterface* copy() const noexcept override;
+
+    bool equal(ASTNodeInterface* other) const noexcept override;
 };
 
 class ReturnStatement : public ExpressionStatement
@@ -99,5 +121,7 @@ public:
     using ExpressionStatement::ExpressionStatement;
 
     ASTNodeInterface* copy() const noexcept override;
+
+    bool equal(ASTNodeInterface* other) const noexcept override;
 };
 
