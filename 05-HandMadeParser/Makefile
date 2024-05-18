@@ -7,4 +7,4 @@ parser: token.h scanner.h parser.h parser.c
 
 .PHONY:
 clean:
-	$(RM) scanner
+	$(RM) parser
