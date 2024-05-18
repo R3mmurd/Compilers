@@ -41,7 +41,7 @@
 int main()
 {
     auto function_declaration = new FunctionDeclaration{
-        "accum_from_zero_to",                                        // --> Function name
+        "accum_from_zero_to",                             // --> Function name
         new FunctionDatatype{                             // --> Function type
             new IntegerDatatype{},
             ParamList{Param{"x", new IntegerDatatype{}}}

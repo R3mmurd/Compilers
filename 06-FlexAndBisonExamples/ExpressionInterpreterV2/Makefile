@@ -5,7 +5,7 @@ BISON = bison -Wcounterexamples --defines=token.h
 all: interpreter
 
 interpreter: parser.o scanner.o main.o expression.o
-	$(CXX) -v scanner.o parser.o main.o expression.o -o interpreter
+	$(CXX) scanner.o parser.o main.o expression.o -o interpreter
 
 parser.o: parser.c
 	$(CXX) -c -I. parser.c

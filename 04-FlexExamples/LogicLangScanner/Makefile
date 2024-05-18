@@ -4,7 +4,7 @@ FLEX = flex
 all: scanner
 
 scanner: scanner.o main.o
-	$(CC) -v scanner.o main.o -o $@
+	$(CC) scanner.o main.o -o $@
 
 scanner.o: scanner.c token.h
 	$(CC) -c $< -o $@
