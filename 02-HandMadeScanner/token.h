@@ -11,7 +11,8 @@ typedef enum
     TOKEN_IDENTIFIER,
     TOKEN_INTEGER,
     TOKEN_UNKNOWN
-} token_t;
+}
+token_t;
 
 #define MAX_BUFFER_LENGTH 1024
 
@@ -21,7 +22,8 @@ typedef struct
 {
     token_t  token;
     buffer_t value;
-} Token;
+}
+Token;
 
 const char* to_str(token_t t)
 {

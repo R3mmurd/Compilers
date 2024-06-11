@@ -68,9 +68,7 @@ int main(int argc, char* argv[])
             return EXIT_SUCCESS;
         }
     }
-
     
-
     std::cout << "Not match found for " << argv[1] << std::endl;
     
     return EXIT_SUCCESS;
