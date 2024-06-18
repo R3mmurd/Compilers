@@ -14,7 +14,8 @@ typedef enum
   TOKEN_LPAREN = 266,
   TOKEN_RPAREN = 267,
   TOKEN_EVAL = 268
-} token_t;
+}
+token_t;
 
 inline const char* token_str(token_t t)
 {

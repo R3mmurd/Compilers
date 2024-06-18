@@ -4,12 +4,13 @@
 #include "token.h"
 
 extern FILE* yyin;
-extern int yylex();
 extern char* yytext;
 
-extern const char* to_str();
+int yylex();
 
-void usage(char *argv[])
+const char* to_str(token_t t);
+
+void usage(char* argv[])
 {
     printf("Usage: %s input_file\n", argv[0]);
     exit(1);

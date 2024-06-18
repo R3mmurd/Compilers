@@ -1,1 +1,1 @@
-SELECT * FROM compiladores WHERE w;
+SELECT id, name, grade FROM compiladores WHERE w;
