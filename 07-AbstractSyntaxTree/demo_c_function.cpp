@@ -91,6 +91,7 @@ int main()
     };
 
     function_declaration->destroy();
+    delete function_declaration;
 
     return EXIT_SUCCESS;
 }
