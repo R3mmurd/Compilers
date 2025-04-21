@@ -1,4 +1,4 @@
-CXX = g++ -std=c++17 -O0 -g
+CXX = clang++ -std=c++17 -O0 -g
 OBJ = ast_node_interface.o datatype.o declaration.o expression.o statement.o symbol_table.o
 
 default: demo_program
