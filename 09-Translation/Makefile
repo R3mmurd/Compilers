@@ -28,4 +28,4 @@ symbol_table.o: symbol_table.cpp symbol_table.hpp
 
 .PHONY:
 clean:
-	$(RM) $(OBJ) demo_program
+	$(RM) $(OBJ) demo_program demo_program.py

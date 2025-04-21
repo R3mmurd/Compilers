@@ -569,7 +569,7 @@ bool DivExpression::equal(ASTNodeInterface* other) const noexcept
 
 std::string DivExpression::to_python(const std::string& ident) const noexcept 
 {
-    return left_expression->to_python(ident) + " / " + right_expression->to_python(ident);
+    return left_expression->to_python(ident) + " // " + right_expression->to_python(ident);
 }
 
 ASTNodeInterface* ModExpression::copy() const noexcept
